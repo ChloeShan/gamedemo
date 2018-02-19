@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>翻转图片</title>
+    <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../css/indexcss.css" rel="stylesheet"/>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1>翻转图片小游戏</h1>
+        <div class="check">
+            <button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button>
+        </div>
+        <div class="controlButton">
+            <button id="restart">重置</button>
+        </div>
+    </div>
+    <script src="../bootstrap-3.3.7-dist/js/jquery-3.3.1.min.js"></script>
+    <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script>
+        function decToHex(n) {
+            var hex = 0;
+            switch (parseInt(n/16)){
+                case 0:;
+                case 1:;
+                case 2:;
+                case 3:;
+                case 4:;
+                case 5:;
+                case 6:;
+                case 7:;
+                case 8:;
+                case 9: hex = parseInt(n/16);break;
+                case 10: hex = 'a';break;
+                case 11: hex = 'b';break;
+                case 12: hex = 'c';break;
+                case 13: hex = 'd';break;
+                case 14: hex = 'e';break;
+                case 15: hex = 'f';break;
+                default: alert("wrong");
+            }
+            switch (parseInt(n%16)){
+                case 0:;
+                case 1:;
+                case 2:;
+                case 3:;
+                case 4:;
+                case 5:;
+                case 6:;
+                case 7:;
+                case 8:;
+                case 9: hex += String(parseInt(n%16));break;
+                case 10: hex += 'a';break;
+                case 11: hex += 'b';break;
+                case 12: hex += 'c';break;
+                case 13: hex += 'd';break;
+                case 14: hex += 'e';break;
+                case 15: hex += 'f';break;
+                default: alert("wrong");
+            }
+            return hex;
+        }
+        function rbgToHex(rbg) {
+            var weizhi = rbg.indexOf(')');
+            var sub = rbg.substring(4,weizhi);
+            var num = sub.split(", ");
+            var color = '#';
+            for(var i = 0; i < num.length; i++)
+                color += decToHex(num[i]);
+            return color;
+        }
+        function positionToSZ(position, turn) {
+            var up = -1, down = -1, left = -1, right = -1, center = -1;
+            var row = 0;
+            var column = 0;
+            if(position >= 6){
+                row = 2;
+                column = position - 6;
+            }else if(position >=3){
+                row = 1;
+                column = position - 3;
+            }else {
+                row = 0;
+                column = position;
+            }
+            if(column - 1 >=0)
+                left = 3 * row + column - 1;
+            if(column + 1 < 3)
+                right = 3 * row + column + 1;
+            if(row + 1 < 3)
+                down = 3 * (row + 1) + column;
+            if(row - 1 >= 0)
+                up = 3 * (row - 1) + column;
+            center = row * 3 + column;
+            switch (turn){
+                case 'left' : return left;
+                case 'right' : return right;
+                case 'up' : return up;
+                case 'down' : return down;
+                case 'center':return center;
+                default:return -1;
+            }
+        }
+        function changColorFocus(rbg, focus) {
+            if(rbgToHex(rbg) == '#337ab7')
+                $(focus).css('background-color','#419641');
+            else
+                $(focus).css('background-color','#337ab7');
+        }
+        function isColorBlue(i) {
+            var focus = $('button').get(i);
+            var rbg = $(focus).css('background-color');
+            if(rbgToHex(rbg) == '#337ab7')
+                return true;
+            else return false;
+        }
+        function turnColor(ind) {
+            if(ind >= 0) {
+                var focus = $('button').get(ind);
+                var rbg = $(focus).css('background-color');
+                changColorFocus(rbg, focus);
+            }
+        }
+        function restart() {
+            for (var i = 0; i < 9; i++) {
+                if (!isColorBlue(i))
+                    turnColor(i);
+            }
+        }
+        $('#restart').click(restart);
+        $('.button').click(function (){
+            var position = $(this).index();
+            turnColor(positionToSZ(position,'center'));
+            turnColor(positionToSZ(position,'up'));
+            turnColor(positionToSZ(position,'left'));
+            turnColor(positionToSZ(position,'down'));
+            turnColor(positionToSZ(position,'right'));
+            for(var i = 0; i < 9; i++){
+                if(isColorBlue(i))
+                    break;
+                if(i == 8){
+                    alert("恭喜你！");
+                    restart();
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>
