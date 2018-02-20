@@ -25,12 +25,20 @@
             margin: 50px auto;
         }
         .controlButton button{
-            width: 200px;
+            width: 100px;
+            margin: 0px auto;
         }
         .title{
             text-align: center;
             width: 500px;
             margin: 0px auto;
+            padding: 0px 5px;
+        }
+        body{
+            font-size: 0px;
+        }
+        span{
+            font-size: 20px;
         }
     </style>
 </head>
@@ -39,16 +47,48 @@
         <div class="title">
             <h1>翻转颜色小游戏</h1>
         </div>
-        <div class="check">
-            <button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button><button class="button"></button>
-        </div>
         <div class="controlButton">
-            <button id="restart">重置</button>
+            <button id="restart"><span>重置</span></button><button id="up"><span>提高难度</span></button><button id="down"><span>降低难度</span></button>
         </div>
+        <div class="check">
+            <button class="button"></button>
+            <button class="button"></button>
+            <button class="button"></button>
+            <button class="button"></button>
+            <button class="button"></button>
+            <button class="button"></button>
+            <button class="button"></button>
+            <button class="button"></button>
+            <button class="button"></button>
+        </div>
+
     </div>
     <script src="../bootstrap-3.3.7-dist/js/jquery-3.3.1.min.js"></script>
     <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script>
+        var check = document.getElementsByClassName('check');
+        check.rowcolumn = 3;
+        $('#up').click(function () {
+                if(check.rowcolumn == 9)
+                    return alert('不能再高了！');
+                var width = (check.rowcolumn + 1) * 100;
+                $('.check').css('width',width,'height',width);
+                for (var i = 0; i < 2 * check.rowcolumn + 1; i++){
+                    $('.check').append('<button class="button"></button>');
+                }
+                check.rowcolumn++;
+        });
+        $('#down').click(function () {
+            if(check.rowcolumn == 3)
+                return alert('不能再低了！');
+            check.rowcolumn--;
+            var width = (check.rowcolumn) * 100;
+            $('.check').css('width',width,'height',width);
+            for (var i = 0; i < 2 * check.rowcolumn + 1; i++){
+                $('.check button').last().remove();
+            }
+
+        })
         function decToHex(n) {
             var hex = 0;
             switch (parseInt(n/16)){
@@ -159,22 +199,22 @@
             }
         }
         $('#restart').click(restart);
-        $('.button').click(function (){
+        $('.check').on('click','button',function (){
             var position = $(this).index();
             turnColor(positionToSZ(position,'center'));
             turnColor(positionToSZ(position,'up'));
             turnColor(positionToSZ(position,'left'));
             turnColor(positionToSZ(position,'down'));
             turnColor(positionToSZ(position,'right'));
-            for(var i = 0; i < 9; i++){
+            for(var i = 0; i < check.rowcolumn * check.rowcolumn; i++){
                 if(isColorBlue(i))
                     break;
-                if(i == 8){
+                if(i == check.rowcolumn * check.rowcolumn - 1){
                     alert("恭喜你！");
                     restart();
                 }
             }
-        })
+        });
 
     </script>
 </body>
