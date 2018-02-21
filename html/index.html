@@ -68,19 +68,28 @@
     <script>
         var check = document.getElementsByClassName('check');
         check.rowcolumn = 3;
-        $('#up').click(function () {
-                if(check.rowcolumn == 9)
-                    return alert('不能再高了！');
-                var width = (check.rowcolumn + 1) * 100;
-                $('.check').css('width',width,'height',width);
-                for (var i = 0; i < 2 * check.rowcolumn + 1; i++){
-                    $('.check').append('<button class="button"></button>');
-                }
-                check.rowcolumn++;
-        });
+        function restart() {
+            for (var i = 0; i < check.rowcolumn * check.rowcolumn; i++) {
+                if (!isColorBlue(i))
+                    turnColor(i);
+            }
+        }
+        function up() {
+            if(check.rowcolumn == 9)
+                return alert('不能再高了！');
+            restart();
+            var width = (check.rowcolumn + 1) * 100;
+            $('.check').css('width',width,'height',width);
+            for (var i = 0; i < 2 * check.rowcolumn + 1; i++){
+                $('.check').append('<button class="button"></button>');
+            }
+            check.rowcolumn++;
+        }
+        $('#up').click(up);
         $('#down').click(function () {
             if(check.rowcolumn == 3)
                 return alert('不能再低了！');
+            restart();
             check.rowcolumn--;
             var width = (check.rowcolumn) * 100;
             $('.check').css('width',width,'height',width);
@@ -144,25 +153,22 @@
             var up = -1, down = -1, left = -1, right = -1, center = -1;
             var row = 0;
             var column = 0;
-            if(position >= 6){
-                row = 2;
-                column = position - 6;
-            }else if(position >=3){
-                row = 1;
-                column = position - 3;
-            }else {
-                row = 0;
-                column = position;
+            for(var i = check.rowcolumn; i > 0; i--){
+                if(position >= (i - 1) * check.rowcolumn){
+                    row = i - 1;
+                    column = position - (i - 1) * check.rowcolumn;
+                    break;
+                }
             }
             if(column - 1 >=0)
-                left = 3 * row + column - 1;
-            if(column + 1 < 3)
-                right = 3 * row + column + 1;
-            if(row + 1 < 3)
-                down = 3 * (row + 1) + column;
+                left = row * check.rowcolumn + column - 1;
+            if(column + 1 < check.rowcolumn)
+                right = check.rowcolumn * row + column + 1;
+            if(row + 1 < check.rowcolumn)
+                down = check.rowcolumn * (row + 1) + column;
             if(row - 1 >= 0)
-                up = 3 * (row - 1) + column;
-            center = row * 3 + column;
+                up = check.rowcolumn * (row - 1) + column;
+            center = row * check.rowcolumn + column;
             switch (turn){
                 case 'left' : return left;
                 case 'right' : return right;
@@ -179,7 +185,7 @@
                 $(focus).css('background-color','#337ab7');
         }
         function isColorBlue(i) {
-            var focus = $('button').get(i);
+            var focus = $('.check button').get(i);
             var rbg = $(focus).css('background-color');
             if(rbgToHex(rbg) == '#337ab7')
                 return true;
@@ -187,31 +193,25 @@
         }
         function turnColor(ind) {
             if(ind >= 0) {
-                var focus = $('button').get(ind);
+                var focus = $('.check button').get(ind);
                 var rbg = $(focus).css('background-color');
                 changColorFocus(rbg, focus);
             }
         }
-        function restart() {
-            for (var i = 0; i < 9; i++) {
-                if (!isColorBlue(i))
-                    turnColor(i);
-            }
-        }
         $('#restart').click(restart);
-        $('.check').on('click','button',function (){
+        $('.check').on('click','.button',function (){
             var position = $(this).index();
-            turnColor(positionToSZ(position,'center'));
             turnColor(positionToSZ(position,'up'));
-            turnColor(positionToSZ(position,'left'));
             turnColor(positionToSZ(position,'down'));
+            turnColor(positionToSZ(position,'left'));
             turnColor(positionToSZ(position,'right'));
+            turnColor(positionToSZ(position,'center'));
             for(var i = 0; i < check.rowcolumn * check.rowcolumn; i++){
                 if(isColorBlue(i))
                     break;
                 if(i == check.rowcolumn * check.rowcolumn - 1){
                     alert("恭喜你！");
-                    restart();
+                    up();
                 }
             }
         });
