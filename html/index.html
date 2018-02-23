@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8"/>
     <title>翻转图片</title>
-    <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="../css/indexcss.css" rel="stylesheet"/>
+    <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <style>
+        body{
+            font-size: 0px;
+        }
         .button{
             background-color: #337ab7;
             width: 100px;
@@ -14,7 +16,7 @@
             margin: 0px 0px;
             outline: none;
         }
-        .check{
+        .check2{
             width: 300px;
             height: 300px;
             margin: 0px auto;
@@ -32,11 +34,11 @@
             margin: 0px auto;
             text-align: center;
         }
-        body{
-            font-size: 0px;
-        }
         span{
             font-size: 20px;
+        }
+        h1{
+            font-size: 50px;
         }
     </style>
 </head>
@@ -44,12 +46,11 @@
     <div class="container-fluid">
         <div class="title">
             <h1>翻转颜色小游戏</h1>
-            <!--<span>翻转颜色小游戏</span>-->
         </div>
         <div class="controlButton">
             <button id="restart"><span>重置</span></button><button id="up"><span>提高难度</span></button><button id="down"><span>降低难度</span></button>
         </div>
-        <div class="check">
+        <div class="check2" style="margin-top: 50px">
             <button class="button"></button>
             <button class="button"></button>
             <button class="button"></button>
@@ -60,158 +61,114 @@
             <button class="button"></button>
             <button class="button"></button>
         </div>
-
     </div>
     <script src="../bootstrap-3.3.7-dist/js/jquery-3.3.1.min.js"></script>
     <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script>
-        var check = document.getElementsByClassName('check');
-        check.rowcolumn = 3;
-        function restart() {
-            for (var i = 0; i < check.rowcolumn * check.rowcolumn; i++) {
-                if (!isColorBlue(i))
-                    turnColor(i);
+        var check2 = document.getElementsByClassName('.check2');
+        check2.rowcolumn = 3;
+        var sz;
+        function buildSZ() {
+            sz = new Array(check2.rowcolumn);
+            for(var i = 0; i < check2.rowcolumn; i++){
+                sz[i] = new Array(check2.rowcolumn);
+                for(var j = 0; j < check2.rowcolumn; j++){
+                    sz[i][j] = 0;
+                }
             }
         }
+        $(buildSZ());
         function up() {
-            if(check.rowcolumn == 9)
+            if(check2.rowcolumn == 9)
                 return alert('不能再高了！');
-            restart();
-            var width = (check.rowcolumn + 1) * 100;
-            $('.check').css('width',width,'height',width);
-            for (var i = 0; i < 2 * check.rowcolumn + 1; i++){
-                $('.check').append('<button class="button"></button>');
+            var width = (check2.rowcolumn + 1) * 100;
+            $('.check2').css('width',width,'height',width);
+            for (var i = 0; i < 2 * check2.rowcolumn + 1; i++){
+                $('.check2').append('<button class="button"></button>');
             }
-            check.rowcolumn++;
+            check2.rowcolumn++;
+            restart();
         }
         $('#up').click(up);
         $('#down').click(function () {
-            if(check.rowcolumn == 3)
+            if(check2.rowcolumn == 3)
                 return alert('不能再低了！');
+            check2.rowcolumn--;
+            var width = (check2.rowcolumn) * 100;
+            $('.check2').css('width',width,'height',width);
+            for (var i = 0; i < 2 * check2.rowcolumn + 1; i++){
+                $('.check2 button').last().remove();
+            }
             restart();
-            check.rowcolumn--;
-            var width = (check.rowcolumn) * 100;
-            $('.check').css('width',width,'height',width);
-            for (var i = 0; i < 2 * check.rowcolumn + 1; i++){
-                $('.check button').last().remove();
-            }
-
-        })
-        function decToHex(n) {
-            var hex = 0;
-            switch (parseInt(n/16)){
-                case 0:;
-                case 1:;
-                case 2:;
-                case 3:;
-                case 4:;
-                case 5:;
-                case 6:;
-                case 7:;
-                case 8:;
-                case 9: hex = parseInt(n/16);break;
-                case 10: hex = 'a';break;
-                case 11: hex = 'b';break;
-                case 12: hex = 'c';break;
-                case 13: hex = 'd';break;
-                case 14: hex = 'e';break;
-                case 15: hex = 'f';break;
-                default: alert("wrong");
-            }
-            switch (parseInt(n%16)){
-                case 0:;
-                case 1:;
-                case 2:;
-                case 3:;
-                case 4:;
-                case 5:;
-                case 6:;
-                case 7:;
-                case 8:;
-                case 9: hex += String(parseInt(n%16));break;
-                case 10: hex += 'a';break;
-                case 11: hex += 'b';break;
-                case 12: hex += 'c';break;
-                case 13: hex += 'd';break;
-                case 14: hex += 'e';break;
-                case 15: hex += 'f';break;
-                default: alert("wrong");
-            }
-            return hex;
-        }
-        function rbgToHex(rbg) {
-            var weizhi = rbg.indexOf(')');
-            var sub = rbg.substring(4,weizhi);
-            var num = sub.split(", ");
-            var color = '#';
-            for(var i = 0; i < num.length; i++)
-                color += decToHex(num[i]);
-            return color;
-        }
-        function positionToSZ(position, turn) {
-            var up = -1, down = -1, left = -1, right = -1, center = -1;
-            var row = 0;
-            var column = 0;
-            for(var i = check.rowcolumn; i > 0; i--){
-                if(position >= (i - 1) * check.rowcolumn){
-                    row = i - 1;
-                    column = position - (i - 1) * check.rowcolumn;
-                    break;
+        });
+        function win(sz) {
+            for(var i = 0; i < check2.rowcolumn; i++){
+                for(var j = 0; j < check2.rowcolumn; j++){
+                    if(sz[i][j] == 0)
+                        return -1;
                 }
             }
-            if(column - 1 >=0)
-                left = row * check.rowcolumn + column - 1;
-            if(column + 1 < check.rowcolumn)
-                right = check.rowcolumn * row + column + 1;
-            if(row + 1 < check.rowcolumn)
-                down = check.rowcolumn * (row + 1) + column;
-            if(row - 1 >= 0)
-                up = check.rowcolumn * (row - 1) + column;
-            center = row * check.rowcolumn + column;
-            switch (turn){
-                case 'left' : return left;
-                case 'right' : return right;
-                case 'up' : return up;
-                case 'down' : return down;
-                case 'center':return center;
-                default:return -1;
-            }
+            return 1;
         }
-        function changColorFocus(rbg, focus) {
-            if(rbgToHex(rbg) == '#337ab7')
-                $(focus).css('background-color','#419641');
+        function turnMode(sz, row, column) {
+            if(sz[row][column] == 1)
+                sz[row][column] = 0;
             else
-                $(focus).css('background-color','#337ab7');
+                sz[row][column] = 1;
         }
-        function isColorBlue(i) {
-            var focus = $('.check button').get(i);
-            var rbg = $(focus).css('background-color');
-            if(rbgToHex(rbg) == '#337ab7')
-                return true;
-            else return false;
-        }
-        function turnColor(ind) {
-            if(ind >= 0) {
-                var focus = $('.check button').get(ind);
-                var rbg = $(focus).css('background-color');
-                changColorFocus(rbg, focus);
+        function turnUDLR(row, column) {
+            if(row - 1 >= 0){
+                turnMode(sz, row - 1, column);
             }
+            if(row + 1 < check2.rowcolumn){
+                turnMode(sz, row + 1, column);
+            }
+            if(column - 1 >= 0){
+                turnMode(sz, row, column - 1);
+            }
+            if(column + 1 < check2.rowcolumn){
+                turnMode(sz, row, column + 1);
+            }
+            turnMode(sz, row, column);
+        }
+        function turnColorSZ(sz) {
+            for(var i = 0; i < check2.rowcolumn; i++){
+                for(var j = 0; j < check2.rowcolumn; j++){
+                    var index = i * check2.rowcolumn + j;
+                    var focus = $('.check2 button').get(index);
+                    /*alert(focus);*/
+                    if(sz[i][j] == 1)
+                        $(focus).css('background-color','#419641');
+                    else
+                        $(focus).css('background-color','#337ab7');
+                }
+            }
+        }
+        function restart() {
+            buildSZ();
+            for(var i = 0; i < check2.rowcolumn; i++){
+                for(var j = 0; j < check2.rowcolumn; j++){
+                    sz[i][j] = 0;
+                }
+            }
+            turnColorSZ(sz);
         }
         $('#restart').click(restart);
-        $('.check').on('click','.button',function (){
+        $('.check2').on('click','button',function () {
             var position = $(this).index();
-            turnColor(positionToSZ(position,'up'));
-            turnColor(positionToSZ(position,'down'));
-            turnColor(positionToSZ(position,'left'));
-            turnColor(positionToSZ(position,'right'));
-            turnColor(positionToSZ(position,'center'));
-            for(var i = 0; i < check.rowcolumn * check.rowcolumn; i++){
-                if(isColorBlue(i))
+            var row, column;
+            for(var i = check2.rowcolumn; i > 0; i--){
+                if(position >= (i - 1) * check2.rowcolumn){
+                    row = i - 1;
+                    column = position - (i - 1) * check2.rowcolumn;
                     break;
-                if(i == check.rowcolumn * check.rowcolumn - 1){
-                    alert("恭喜你！");
-                    up();
                 }
+            }
+            turnUDLR(row,column);
+            turnColorSZ(sz);
+            if(win(sz) == 1){
+                alert("恭喜你！！");
+                restart();
             }
         });
     </script>
