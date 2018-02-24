@@ -40,12 +40,26 @@
         h1{
             font-size: 50px;
         }
+        .number span{
+            margin: 0px 10px;
+            /*position: relative;
+            top:-390px;
+            left: 400px;*/
+        }
+        .num, .time{
+            margin-right: 10px;
+            font-size: 25px;
+        }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
+    <div class="container-fluid" style="position: relative">
         <div class="title">
             <h1>翻转颜色小游戏</h1>
+            <div class="number">
+                <span>步数：</span><span class="num">0</span>
+                <span>时间：</span><span class="time">00:00:00</span>
+            </div>
         </div>
         <div class="controlButton">
             <button id="restart"><span>重置</span></button><button id="up"><span>提高难度</span></button><button id="down"><span>降低难度</span></button>
@@ -65,9 +79,15 @@
     <script src="../bootstrap-3.3.7-dist/js/jquery-3.3.1.min.js"></script>
     <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script>
+        var num = 0;
         var check2 = document.getElementsByClassName('.check2');
         check2.rowcolumn = 3;
+        var strSec, strMin, strHour;
         var sz;
+        var clockTime;
+        var sec = 0;
+        var min = 0;
+        var hour = 0;
         function buildSZ() {
             sz = new Array(check2.rowcolumn);
             for(var i = 0; i < check2.rowcolumn; i++){
@@ -152,9 +172,45 @@
                 }
             }
             turnColorSZ(sz);
+            num = 0;
+            $('.num').text(num);
+            clearInterval(clockTime);
+            sec = 0;
+            min = 0;
+            hour = 0;
+            $('.time').text("00:00:00");
+        }
+        function clock() {
+            if(sec >= 0 & sec < 59)
+                sec++;
+            else if(sec == 59){
+                sec = 0;
+                min++;
+            }
+            if(min == 59){
+                min = 0;
+                hour++;
+            }
+            if(sec >= 0 && sec <= 9)
+                strSec = 0 + String(sec);
+            else
+                strSec = sec;
+            if(min >= 0 && min <= 9)
+                strMin = 0 + String(min);
+            else
+                strMin = min;
+            if(hour >= 0 && hour <= 9)
+                strHour = 0 + String(hour);
+            else
+                strHour = hour;
+            $('.time').text(strHour + ':' + strMin + ':' + strSec);
         }
         $('#restart').click(restart);
         $('.check2').on('click','button',function () {
+            num++;
+            $('.num').text(num);
+            if(num == 1)
+                clockTime = self.setInterval(clock,1000);
             var position = $(this).index();
             var row, column;
             for(var i = check2.rowcolumn; i > 0; i--){
@@ -167,7 +223,8 @@
             turnUDLR(row,column);
             turnColorSZ(sz);
             if(win(sz) == 1){
-                alert("恭喜你！！");
+                alert("恭喜你！！\n步数：" + num + '\n时间:' + strHour + ':' + strMin + ':' + strSec);
+                up();
                 restart();
             }
         });
